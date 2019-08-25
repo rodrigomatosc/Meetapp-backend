@@ -4,5 +4,19 @@
   "description": "Backend of a developer event aggregator app called Meetapp (an acronym for Meetup + App).",
   "main": "index.js",
   "author": "Rodrigo Matos <rodrigocostamatos2211@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.16.0",
+    "sequelize-cli": "^5.5.0",
+    "sucrase": "^3.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
 }
