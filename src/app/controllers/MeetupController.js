@@ -85,6 +85,26 @@ class MeetupController {
 
     return res.json(meetup);
   }
+
+  async delete(req, res) {
+    const { id } = req.params;
+
+    const existsMeetup = await Meetup.findOne({
+      where: { id, date: { [Op.gte]: new Date() } }
+    });
+
+    if (!existsMeetup) {
+      return res.status(400).json({ error: "Meetup not found." });
+    }
+
+    if (req.userId !== existsMeetup.user_id) {
+      return res.status(400).json({ error: "User can't delete the meetup" });
+    }
+
+    await existsMeetup.destroy();
+
+    return res.json({ response: "Meetup deleted with sucess." });
+  }
 }
 
 export default new MeetupController();
