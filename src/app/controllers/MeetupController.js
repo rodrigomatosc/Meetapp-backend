@@ -5,6 +5,26 @@ import { Op } from "sequelize";
 import dateUtil from "../../util/dateUtil";
 
 class MeetupController {
+  async index(req, res) {
+    const page = req.query.page || 1;
+    const { date: filterDate } = req.query;
+
+    const meetups = await Meetup.findAll({
+      where: !filterDate
+        ? {}
+        : {
+            date: {
+              [Op.between]: [startOfDay(searchDate), endOfDay(searchDate)]
+            }
+          },
+      include: [User],
+      limit: 10,
+      offset: 10 * page - 10
+    });
+
+    return res.json(meetups);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       title: Yup.string().required(),

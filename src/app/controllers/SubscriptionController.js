@@ -1,13 +1,22 @@
 import Subscription from "../models/Subscriprion";
 import Meetup from "../models/Meetup";
 import { Op } from "sequelize";
-import { startOfHour, endOfHour } from "date-fns";
+import { startOfHour, endOfHour, format } from "date-fns";
+import Queue from "../../lib/Queue";
+import User from "../models/User";
+import NewSubscriberMail from "../jobs/NewSubscriberMail";
 
 class SubscriptionController {
   async store(req, res) {
     const { id_meetup } = req.query;
     const existsMeetup = await Meetup.findOne({
-      where: { id: id_meetup, date: { [Op.gte]: new Date() } }
+      where: { id: id_meetup, date: { [Op.gte]: new Date() } },
+      include: [
+        {
+          model: User,
+          attributes: ["name", "email"]
+        }
+      ]
     });
 
     if (!existsMeetup) {
@@ -63,6 +72,16 @@ class SubscriptionController {
     const subscription = await Subscription.create({
       id_user: req.userId,
       id_meetup
+    });
+
+    const user = await User.findByPk(req.userId);
+
+    await Queue.add(NewSubscriberMail.key, {
+      owner: existsMeetup.User.name,
+      ownerEmail: existsMeetup.User.email,
+      user: user.name,
+      title: existsMeetup.title,
+      date: existsMeetup.date
     });
 
     return res.json(subscription);
