@@ -1,7 +1,8 @@
-import express from "express";
-import routes from "./routes";
-import "./database";
-import { resolve } from "path";
+import express from 'express';
+import routes from './routes';
+import './database';
+import { resolve } from 'path';
+import cors from 'cors';
 
 class App {
   constructor() {
@@ -12,9 +13,10 @@ class App {
 
   middlewares() {
     this.server.use(express.json());
+    this.server.use(cors());
     this.server.use(
-      "/files",
-      express.static(resolve(__dirname, "..", "tmp", "uploads"))
+      '/files',
+      express.static(resolve(__dirname, '..', 'tmp', 'uploads'))
     );
   }
 
